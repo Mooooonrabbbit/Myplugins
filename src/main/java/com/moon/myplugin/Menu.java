@@ -20,7 +20,7 @@ import java.util.*;
 import static com.moon.myplugin.Myplugin.plugin;
 
 public class Menu implements Listener, CommandExecutor {
-    private static Map<String, MenuConfig> menus = new HashMap<>();
+    private static final Map<String, MenuConfig> menus = new HashMap<>();
 
     // 加载菜单配置
     public void loadMenus() {
@@ -28,9 +28,14 @@ public class Menu implements Listener, CommandExecutor {
         if (!menuFolder.exists()) {
             menuFolder.mkdirs();
             plugin.saveResource("menus/main.yml", false);
+            menuFolder = new File(plugin.getDataFolder(), "menus");
         }
-
-        for (File file : menuFolder.listFiles()) {
+        File[] files = menuFolder.listFiles();
+        if (files == null || files.length == 0) {
+            System.out.println("no found menu");
+            return;
+        }
+        for (File file : files) {
             YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
             String s = file.getName().replace(".yml", "");
             menus.put(s, new MenuConfig(config));
@@ -56,7 +61,7 @@ public class Menu implements Listener, CommandExecutor {
         if (args[0].equalsIgnoreCase("reload")) {
             plugin.reloadConfig();
             loadMenus();
-            player.sendMessage(ChatColor.GREEN + "菜单已重载");
+            player.sendMessage(ChatColor.GREEN + "menu reload");
             return true;
         }
 
@@ -67,7 +72,7 @@ public class Menu implements Listener, CommandExecutor {
     private void openMenu(Player player, String menuName) {
         MenuConfig config = menus.get(menuName);
         if (config == null) {
-            System.out.printf("未找到%s配置\n", menuName);
+            System.out.printf("no find %s config\n", menuName);
             return;
         }
 
