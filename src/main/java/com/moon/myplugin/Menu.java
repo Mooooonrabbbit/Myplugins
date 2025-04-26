@@ -39,7 +39,7 @@ public class Menu implements Listener, CommandExecutor {
             YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
             String s = file.getName().replace(".yml", "");
             menus.put(s, new MenuConfig(config));
-            System.out.println("Loaded menu:%s" + s);
+            System.out.println("Loaded menu:" + s);
         }
     }
 
@@ -72,7 +72,7 @@ public class Menu implements Listener, CommandExecutor {
     private void openMenu(Player player, String menuName) {
         MenuConfig config = menus.get(menuName);
         if (config == null) {
-            System.out.printf("no find %s config\n", menuName);
+            System.out.println("no find " + menuName + " config");
             return;
         }
 
