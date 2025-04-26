@@ -10,6 +10,9 @@ public class Myplugin extends JavaPlugin {
     public NamespacedKey key;
     public static Myplugin plugin;
 
+    public HealthXp healthXp = new HealthXp();
+    public Menu menu = new Menu();
+
     @Override
     public void onEnable() {
         plugin = this;
@@ -19,9 +22,6 @@ public class Myplugin extends JavaPlugin {
 
         // 初始化数据键
         key = new NamespacedKey(this, "Myplugin");
-
-        HealthXp healthXp = new HealthXp();
-        Menu menu = new Menu();
         // 注册事件和指令
         Bukkit.getPluginManager().registerEvents(healthXp, this);
         Bukkit.getPluginManager().registerEvents(menu, this);

@@ -23,7 +23,7 @@ import java.util.UUID;
 
 import static com.moon.myplugin.Myplugin.plugin;
 
-public class HealthXp  implements Listener, CommandExecutor {
+public class HealthXp implements Listener, CommandExecutor {
     // 默认是否启用功能
     public static boolean defaultEnabled;
     // 更新间隔限制（毫秒）
@@ -44,6 +44,7 @@ public class HealthXp  implements Listener, CommandExecutor {
         applyHealthDisplay(player, enabled);
         player.sendMessage(enabled ? "§a血量显示已启用" : "§c血量显示已禁用");
     }
+
     // ============== 血量显示逻辑 ==============
     public void updateHealthDisplay(Player player) {
         if (!isEnabled(player)) return;
@@ -62,10 +63,12 @@ public class HealthXp  implements Listener, CommandExecutor {
         // 发送数据包（保留真实总经验）
         sendExperiencePacket(player, progress, level, player.getTotalExperience());
     }
+
     public static void sendExperiencePacket(Player player, float progress, int level, int totalExp) {
         ClientboundSetExperiencePacket packet = new ClientboundSetExperiencePacket(progress, totalExp, level);
         ((CraftPlayer) player).getHandle().connection.send(packet);
     }
+
     // ============== 事件监听 ==============
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -78,29 +81,29 @@ public class HealthXp  implements Listener, CommandExecutor {
     @EventHandler
     public void onPlayerDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
-            scheduleUpdate((Player) event.getEntity(),2);
+            scheduleUpdate((Player) event.getEntity(), 2);
         }
     }
 
     @EventHandler
     public void onPlayerHeal(EntityRegainHealthEvent event) {
         if (event.getEntity() instanceof Player) {
-            scheduleUpdate((Player) event.getEntity(),2);
+            scheduleUpdate((Player) event.getEntity(), 2);
         }
     }
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        scheduleUpdate(event.getPlayer(),2);
+        scheduleUpdate(event.getPlayer(), 2);
     }
 
     @EventHandler
     public void onPlayerExpChange(PlayerExpChangeEvent event) {
-        scheduleUpdate(event.getPlayer(),20);
+        scheduleUpdate(event.getPlayer(), 20);
     }
 
     // 延迟更新
-    private void scheduleUpdate(Player player,long updateCooldown) {
+    private void scheduleUpdate(Player player, long updateCooldown) {
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (player.isOnline()) updateHealthDisplay(player);
         }, updateCooldown);
