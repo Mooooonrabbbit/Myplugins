@@ -6,8 +6,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -34,7 +32,9 @@ public class Menu implements Listener, CommandExecutor {
 
         for (File file : menuFolder.listFiles()) {
             YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-            menus.put(file.getName().replace(".yml", ""), new MenuConfig(config));
+            String s = file.getName().replace(".yml", "");
+            menus.put(s, new MenuConfig(config));
+            System.out.println("Loaded menu:%s" + s);
         }
     }
 
@@ -48,8 +48,12 @@ public class Menu implements Listener, CommandExecutor {
             openMenu(player, "main");
             return true;
         }
+        if (args.length == 1) {
+            openMenu(player, args[0]);
+            return true;
+        }
 
-        if (args[0].equalsIgnoreCase("reload") && player.hasPermission("menu.admin")) {
+        if (args[0].equalsIgnoreCase("reload")) {
             plugin.reloadConfig();
             loadMenus();
             player.sendMessage(ChatColor.GREEN + "菜单已重载");
@@ -62,7 +66,10 @@ public class Menu implements Listener, CommandExecutor {
     // 打开菜单
     private void openMenu(Player player, String menuName) {
         MenuConfig config = menus.get(menuName);
-        if (config == null) return;
+        if (config == null) {
+            System.out.printf("未找到%s配置\n", menuName);
+            return;
+        }
 
         Inventory menu = Bukkit.createInventory(new MenuHolder(menuName),
                 config.getSize(),

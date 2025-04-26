@@ -7,7 +7,13 @@ commands:
   hx:
     description: 控制血量显示功能
     usage: /hx [on|off|reload]
+  menu:
+    description: 控制血量显示功能
+    usage: /hx [reload]
 permissions:
   hxp.reload:
+    description: 允许重载插件配置
+    default: op
+  menu.reload:
     description: 允许重载插件配置
     default: op
