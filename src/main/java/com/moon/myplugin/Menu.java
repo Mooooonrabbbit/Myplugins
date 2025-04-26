@@ -1,13 +1,14 @@
-package com.moon.healthXp5;
+package com.moon.myplugin;
 
-import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.bukkit.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.*;
@@ -15,15 +16,16 @@ import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.*;
+
 import java.util.*;
 
-import static com.moon.healthXp5.HealthXp5.plugin;
+import static com.moon.myplugin.Myplugin.plugin;
 
-public class menu {
+public class Menu implements Listener, CommandExecutor {
     private static Map<String, MenuConfig> menus = new HashMap<>();
 
     // 加载菜单配置
-    public static void loadMenus() {
+    public void loadMenus() {
         File menuFolder = new File(plugin.getDataFolder(), "menus");
         if (!menuFolder.exists()) {
             menuFolder.mkdirs();
@@ -82,7 +84,7 @@ public class menu {
 
         // 设置持久化数据标记
         PersistentDataContainer data = meta.getPersistentDataContainer();
-        data.set(menuKey, PersistentDataType.STRING, item.getId());
+        data.set(plugin.key, PersistentDataType.STRING, item.getId());
 
         // 设置显示属性
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', item.getName()));
@@ -110,8 +112,8 @@ public class menu {
         Player player = (Player) event.getWhoClicked();
         PersistentDataContainer data = item.getItemMeta().getPersistentDataContainer();
 
-        if (data.has(menuKey)) {
-            String itemId = data.get(menuKey, PersistentDataType.STRING);
+        if (data.has(plugin.key)) {
+            String itemId = data.get(plugin.key, PersistentDataType.STRING);
             handleMenuClick(player, itemId);
         }
     }
@@ -184,9 +186,11 @@ public class menu {
         public int getSize() {
             return size;
         }
+
         public Map<String, MenuItem> getItems() {
             return items;
         }
+
         public MenuItem getItem(String key) {
             return items.get(key);
         }

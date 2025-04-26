@@ -1,77 +1,51 @@
-package com.moon.healthXp5;
+package com.moon.myplugin;
 
 import net.minecraft.network.protocol.game.ClientboundSetExperiencePacket;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.command.*;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.*;
-import org.bukkit.event.entity.*;
-import org.bukkit.event.player.*;
-import org.bukkit.persistence.*;
-import java.util.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.player.PlayerExpChangeEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.persistence.PersistentDataType;
 
-public class HealthXp5 extends JavaPlugin implements Listener, CommandExecutor {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
-    // 持久化数据键
-    private NamespacedKey toggleKey;
+import static com.moon.myplugin.Myplugin.plugin;
+
+public class HealthXp  implements Listener, CommandExecutor {
     // 默认是否启用功能
-    private boolean defaultEnabled;
+    public static boolean defaultEnabled;
     // 更新间隔限制（毫秒）
-    private long updateCooldown = 100;
+    public static long updateCooldown = 100;
+
+
     private final Map<UUID, Long> lastUpdateMap = new HashMap<>();
 
-    public static HealthXp5 plugin;
-    @Override
-    public void onEnable() {
-        // 初始化配置
-        saveDefaultConfig();
-        reloadConfigValues();
-
-        // 初始化数据键
-        toggleKey = new NamespacedKey(this, "hxp-toggle");
-
-        // 注册事件和指令
-        Bukkit.getPluginManager().registerEvents(this, this);
-        getCommand("hx").setExecutor(this);
-        plugin = this;
-        // 为在线玩家应用状态
-        Bukkit.getOnlinePlayers().forEach(p -> applyHealthDisplay(p, isEnabled(p)));
-        menu.loadMenus();
-        plugin.getCommand("menu").setExecutor(this);
-        plugin.getServer().getPluginManager().registerEvents(this, this);
-    }
-
-    // ============== 配置文件管理 ==============
-    private void reloadConfigValues() {
-        reloadConfig();
-        FileConfiguration config = getConfig();
-        config.addDefault("default-enabled", true);
-        config.addDefault("update-cooldown", 100);
-        config.options().copyDefaults(true);
-        saveConfig();
-
-        defaultEnabled = config.getBoolean("default-enabled");
-        updateCooldown = config.getLong("update-cooldown");
-    }
 
     // ============== 功能开关状态管理 ==============
-    private boolean isEnabled(Player player) {
+    public boolean isEnabled(Player player) {
         return player.getPersistentDataContainer()
-                .getOrDefault(toggleKey, PersistentDataType.BOOLEAN, defaultEnabled);
+                .getOrDefault(plugin.key, PersistentDataType.BOOLEAN, defaultEnabled);
     }
 
-    private void setEnabled(Player player, boolean enabled) {
-        player.getPersistentDataContainer().set(toggleKey, PersistentDataType.BOOLEAN, enabled);
+    public void setEnabled(Player player, boolean enabled) {
+        player.getPersistentDataContainer().set(plugin.key, PersistentDataType.BOOLEAN, enabled);
         applyHealthDisplay(player, enabled);
         player.sendMessage(enabled ? "§a血量显示已启用" : "§c血量显示已禁用");
     }
-
     // ============== 血量显示逻辑 ==============
-    private void updateHealthDisplay(Player player) {
+    public void updateHealthDisplay(Player player) {
         if (!isEnabled(player)) return;
 
         // 防高频更新
@@ -96,7 +70,7 @@ public class HealthXp5 extends JavaPlugin implements Listener, CommandExecutor {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        Bukkit.getScheduler().runTaskLater(this, () -> {
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
             applyHealthDisplay(player, isEnabled(player));
         }, 20); // 延迟20 ticks确保数据同步
     }
@@ -127,7 +101,7 @@ public class HealthXp5 extends JavaPlugin implements Listener, CommandExecutor {
 
     // 延迟更新
     private void scheduleUpdate(Player player,long updateCooldown) {
-        Bukkit.getScheduler().runTaskLater(this, () -> {
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (player.isOnline()) updateHealthDisplay(player);
         }, updateCooldown);
     }
@@ -153,7 +127,7 @@ public class HealthXp5 extends JavaPlugin implements Listener, CommandExecutor {
                 break;
             case "reload":
                 if (sender.hasPermission("hxp.reload")) {
-                    reloadConfigValues();
+                    plugin.reloadConfigValues();
                     sender.sendMessage("§aHealthXp5配置已重载");
                 } else {
                     sender.sendMessage("§c你没有权限");
@@ -176,7 +150,7 @@ public class HealthXp5 extends JavaPlugin implements Listener, CommandExecutor {
     }
 
     // 应用显示状态
-    private void applyHealthDisplay(Player player, boolean enabled) {
+    public void applyHealthDisplay(Player player, boolean enabled) {
         if (enabled) {
             updateHealthDisplay(player);
         } else {
