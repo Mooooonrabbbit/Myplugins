@@ -1,0 +1,8 @@
+# 默认是否启用功能
+default-enabled: true
+
+# 经验值血条更新间隔，默认值100（单位毫秒，调高数值防止高频发包卡顿）
+update-cooldown: 100
+
+
+

@@ -1,0 +1,13 @@
+name: HealthXp5
+version: '1.0'
+main: com.moon.healthXp5.HealthXp5
+api-version: '1.21.4'
+authors: [ Mooooonrabbbit ]
+commands:
+  hx:
+    description: 控制血量显示功能
+    usage: /hx [on|off|reload]
+permissions:
+  hxp.reload:
+    description: 允许重载插件配置
+    default: op
