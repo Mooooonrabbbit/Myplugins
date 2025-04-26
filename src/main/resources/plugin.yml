@@ -1,4 +1,4 @@
-name: HealthXp5
+name: Myplugin
 version: '1.0'
 main: com.moon.myplugin.Myplugin
 api-version: '1.21.4'

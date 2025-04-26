@@ -25,8 +25,8 @@ public class Myplugin extends JavaPlugin {
         // 注册事件和指令
         Bukkit.getPluginManager().registerEvents(healthXp, this);
         Bukkit.getPluginManager().registerEvents(menu, this);
-        getCommand("hx").setExecutor(this);
-        getCommand("menu").setExecutor(this);
+        getCommand("hx").setExecutor(healthXp);
+        getCommand("menu").setExecutor(menu);
         // 为在线玩家应用状态
         menu.loadMenus();
         Bukkit.getOnlinePlayers().forEach(p -> healthXp.applyHealthDisplay(p, healthXp.isEnabled(p)));
