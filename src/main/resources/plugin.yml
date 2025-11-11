@@ -1,6 +1,6 @@
 name: Myplugin
 version: '1.0'
-main: com.moon.myplugin.Myplugin
+main: com.moon.myplugin.Moon1
 api-version: '1.21.4'
 authors: [ Mooooonrabbbit ]
 commands:

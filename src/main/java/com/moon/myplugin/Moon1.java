@@ -4,14 +4,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 
-public class Myplugin extends JavaPlugin {
+public class Moon1 extends JavaPlugin {
 
     // 持久化数据键
     public NamespacedKey key;
-    public static Myplugin plugin;
+    public static Moon1 plugin;
 
     public HealthXp healthXp = new HealthXp();
-    public Menu menu = new Menu();
 
     @Override
     public void onEnable() {
@@ -24,11 +23,7 @@ public class Myplugin extends JavaPlugin {
         key = new NamespacedKey(this, "Myplugin");
         // 注册事件和指令
         Bukkit.getPluginManager().registerEvents(healthXp, this);
-        Bukkit.getPluginManager().registerEvents(menu, this);
         getCommand("hx").setExecutor(healthXp);
-        getCommand("menu").setExecutor(menu);
-        // 为在线玩家应用状态
-        menu.loadMenus();
         Bukkit.getOnlinePlayers().forEach(p -> healthXp.applyHealthDisplay(p, healthXp.isEnabled(p)));
     }
 
@@ -43,6 +38,7 @@ public class Myplugin extends JavaPlugin {
 
         HealthXp.defaultEnabled = config.getBoolean("default-enabled");
         HealthXp.updateCooldown = config.getLong("update-cooldown");
+
     }
 
 }
